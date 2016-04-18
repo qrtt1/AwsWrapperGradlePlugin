@@ -24,6 +24,7 @@ class AwsWrapperPluginTest extends Specification {
     File buildFile
     
     def setup() {
+        PluginInstaller.install();
         buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
             buildscript {
@@ -66,11 +67,11 @@ class AwsWrapperPluginTest extends Specification {
         when:
         def result = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
-            .withArguments("tasks", "--stacktrace", "--debug")
+            .withArguments("tasks")
             .build()
             
         then:
         result.task(":tasks").outcome == SUCCESS
-        
+        print result.output
     }
 }

@@ -1,8 +1,10 @@
 package org.qty.aws.wrapper.lambda
 
+import jp.classmethod.aws.gradle.lambda.AWSLambdaUpdateFunctionCodeTask
+import jp.classmethod.aws.gradle.lambda.S3File;
+
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionContainer
-import org.gradle.language.assembler.tasks.Assemble;
 import org.gradle.model.Model
 import org.gradle.model.ModelMap
 import org.gradle.model.Mutate
@@ -10,8 +12,6 @@ import org.gradle.model.RuleSource
 import org.gradle.model.Validate
 
 import com.google.common.base.Preconditions
-
-import jp.classmethod.aws.gradle.lambda.AWSLambdaUpdateFunctionCodeTask;;;
 
 class AwsWrapperRule extends RuleSource {
 
@@ -49,10 +49,23 @@ class AwsWrapperRule extends RuleSource {
             tasks.create("updateLambdaFunction${function.name}", AWSLambdaUpdateFunctionCodeTask.class, {
                 group = "Amazon Lambda Updater tasks"
                 description = "update Lambda Function [${function.name}]"
-                doLast {
-                    println "do nothing function ${function.name}"
+                
+                if(source.file != null) {
+                    file = new File(source.file)
+                } else {
+                    s3File = new S3File()
+                    s3File.bucketName = source.bucketName
+                    s3File.key = source.key
                 }
+                
+                functionName = function.name
             })
         }
+
+        tasks.create("updateAllLambdaFunctions", {
+            group = "Amazon Lambda Updater tasks"
+            description = "update All Lambda Functions"
+            dependsOn: extension.function.collect { function -> "updateLambdaFunction${function.name}" }
+        })
     }
 }

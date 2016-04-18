@@ -14,13 +14,15 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 
+import com.google.gson.Gson;
+
 import spock.lang.Specification
 
 class AwsWrapperPluginTest extends Specification {
 
     @Rule final TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
-
+    
     def setup() {
         buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
@@ -44,7 +46,7 @@ class AwsWrapperPluginTest extends Specification {
         """
     }
     
-    def testLambdaConfig() {
+    def testLambdaConfigSyntax() {
         given:
         buildFile << """
             lambdaConfig {
@@ -64,11 +66,10 @@ class AwsWrapperPluginTest extends Specification {
         when:
         def result = GradleRunner.create()
             .withProjectDir(testProjectDir.root)
-            .withArguments("tasks")
+            .withArguments("tasks", "--stacktrace", "--debug")
             .build()
-
+            
         then:
-        println result.output
         result.task(":tasks").outcome == SUCCESS
         
     }

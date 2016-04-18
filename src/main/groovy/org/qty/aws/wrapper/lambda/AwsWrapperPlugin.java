@@ -12,6 +12,7 @@ public class AwsWrapperPlugin implements Plugin<Project> {
     public void apply(Project project) {
         project.getPluginManager().apply(AmazonS3Plugin.class);
         project.getPluginManager().apply(AWSLambdaPlugin.class);
+        project.getExtensions().create("lambdaConfig", LambdaConfigExtension.class, project);
     }
 
 }

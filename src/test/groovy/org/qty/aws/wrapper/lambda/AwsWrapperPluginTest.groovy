@@ -49,29 +49,31 @@ class AwsWrapperPluginTest extends Specification {
     
     def testLambdaConfigSyntax() {
         given:
-        buildFile << """
-            lambdaConfig {
-                source {
-                    bucketName = 'abc'
-                    key = 'def.zip'
-                    // OR
-                    file = 'a_local_file.zip'
+            buildFile << """
+                lambdaConfig {
+                    source {
+                        bucketName = 'abc'
+                        key = 'def.zip'
+                        // OR
+                        file = 'a_local_file.zip'
+                    }
+                    function {
+                        Function1
+                        Function2
+                    }
                 }
-                function {
-                    Function1
-                    Function2
-                }
-            }
-        """
+            """
 
         when:
-        def result = GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments("tasks")
-            .build()
+            def result = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("tasks")
+                .build()
             
         then:
-        result.task(":tasks").outcome == SUCCESS
-        print result.output
+            result.task(":tasks").outcome == SUCCESS
+            result.output.contains("updateLambdaFunctionFunction1")
+            result.output.contains("updateLambdaFunctionFunction2")
+
     }
 }

@@ -9,7 +9,9 @@ import org.gradle.model.Mutate
 import org.gradle.model.RuleSource
 import org.gradle.model.Validate
 
-import com.google.common.base.Preconditions;;
+import com.google.common.base.Preconditions
+
+import jp.classmethod.aws.gradle.lambda.AWSLambdaUpdateFunctionCodeTask;;;
 
 class AwsWrapperRule extends RuleSource {
 
@@ -26,6 +28,11 @@ class AwsWrapperRule extends RuleSource {
         if(source.file != null) {
             Preconditions.checkState(source.bucketName == null && source.key == null,
                     "lambdaConfig.source{} should be one of the (file, bucketName with key)")
+            
+            File path = new File(source.file).getAbsoluteFile()
+            Preconditions.checkState(path.exists(),
+                "lambdaConfig.source{} file not found: " + path)
+            
         } else {
             Preconditions.checkState(source.bucketName != null,
                     "lambdaConfig.source{} property bucketName cannot be null ")
@@ -36,8 +43,10 @@ class AwsWrapperRule extends RuleSource {
 
     @Mutate
     public void generateUpdateTask(ModelMap<Task> tasks, LambdaConfigExtension extension) {
+        SourceBlock source = extension.source;
+        
         extension.function.each { function -> 
-            tasks.create("updateLambdaFunction${function.name}", {
+            tasks.create("updateLambdaFunction${function.name}", AWSLambdaUpdateFunctionCodeTask.class, {
                 group = "Amazon Lambda Updater tasks"
                 description = "update Lambda Function [${function.name}]"
                 doLast {

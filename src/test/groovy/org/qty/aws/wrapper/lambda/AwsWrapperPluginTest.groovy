@@ -128,6 +128,22 @@ class AwsWrapperPluginTest extends Specification {
             thrown UnexpectedBuildFailure
     }
     
+    def testWrongSourceSettingsFileNotFound() {
+        given:
+            buildFile << """
+                lambdaConfig {
+                    source {
+                        file = 'no_such_file.zip'
+                    }
+                }
+            """
+        when:
+            invokeGradle()
+            
+        then:
+            thrown UnexpectedBuildFailure
+    }
+    
     def invokeGradle() {
         def result = GradleRunner.create()
             .withProjectDir(testProjectDir.root)

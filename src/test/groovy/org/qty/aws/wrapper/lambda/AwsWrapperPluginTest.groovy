@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue
 
 import org.gradle.api.Project
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 
@@ -54,8 +55,6 @@ class AwsWrapperPluginTest extends Specification {
                     source {
                         bucketName = 'abc'
                         key = 'def.zip'
-                        // OR
-                        file = 'a_local_file.zip'
                     }
                     function {
                         Function1
@@ -74,6 +73,32 @@ class AwsWrapperPluginTest extends Specification {
             result.task(":tasks").outcome == SUCCESS
             result.output.contains("updateLambdaFunctionFunction1")
             result.output.contains("updateLambdaFunctionFunction2")
+    }
+    
+    def testWrongSourceSettings() {
+        given:
+            buildFile << """
+                lambdaConfig {
+                    source {
+                        bucketName = 'abc'
+                        key = 'def.zip'
 
+                        /* 
+                          source settings should be either local-file or s3-file.
+                        */
+
+                        file = 'a_local_file.zip'
+                    }
+                }
+            """
+
+        when:
+            def result = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withArguments("tasks")
+                .build()
+            
+        then:
+            thrown UnexpectedBuildFailure
     }
 }

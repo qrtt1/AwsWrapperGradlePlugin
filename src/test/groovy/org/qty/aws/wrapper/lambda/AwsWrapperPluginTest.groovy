@@ -64,10 +64,7 @@ class AwsWrapperPluginTest extends Specification {
             """
 
         when:
-            def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("tasks")
-                .build()
+            def result = invokeGradle()
             
         then:
             result.task(":tasks").outcome == SUCCESS
@@ -93,12 +90,49 @@ class AwsWrapperPluginTest extends Specification {
             """
 
         when:
-            def result = GradleRunner.create()
-                .withProjectDir(testProjectDir.root)
-                .withArguments("tasks")
-                .build()
+            invokeGradle()
             
         then:
             thrown UnexpectedBuildFailure
+    }
+    
+    def testWrongSourceSettingsPartialS3BucketOnly() {
+        given:
+            buildFile << """
+                lambdaConfig {
+                    source {
+                        bucketName = 'def.zip'
+                    }
+                }
+            """
+        when:
+            invokeGradle()
+            
+        then:
+            thrown UnexpectedBuildFailure
+    }
+    
+    def testWrongSourceSettingsPartialS3KeyOnly() {
+        given:
+            buildFile << """
+                lambdaConfig {
+                    source {
+                        key = 'def.zip'
+                    }
+                }
+            """
+        when:
+            invokeGradle()
+            
+        then:
+            thrown UnexpectedBuildFailure
+    }
+    
+    def invokeGradle() {
+        def result = GradleRunner.create()
+            .withProjectDir(testProjectDir.root)
+            .withArguments("tasks")
+            .build()
+        return result
     }
 }

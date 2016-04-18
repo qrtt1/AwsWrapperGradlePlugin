@@ -17,15 +17,20 @@ class AwsWrapperRule extends RuleSource {
     public LambdaConfigExtension lambdaConfig(ExtensionContainer container) {
         return container.getByType(LambdaConfigExtension.class)
     }
-    
+
     @Validate
     public void validateSourceBlock(LambdaConfigExtension extension){
         SourceBlock source = extension.source;
         Preconditions.checkState(source != null, "lambdaConfig.source{} cannot be null.")
-        
+
         if(source.file != null) {
-            Preconditions.checkState(source.bucketName == null && source.key == null, 
-                "lambdaConfig.source{} should be one of the (file, bucketName with key)")
+            Preconditions.checkState(source.bucketName == null && source.key == null,
+                    "lambdaConfig.source{} should be one of the (file, bucketName with key)")
+        } else {
+            Preconditions.checkState(source.bucketName != null,
+                    "lambdaConfig.source{} property bucketName cannot be null ")
+            Preconditions.checkState(source.key != null,
+                    "lambdaConfig.source{} property key cannot be null ")
         }
     }
 

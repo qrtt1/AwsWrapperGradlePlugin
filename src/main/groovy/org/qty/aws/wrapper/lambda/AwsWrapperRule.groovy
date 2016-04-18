@@ -67,7 +67,7 @@ class AwsWrapperRule extends RuleSource {
         tasks.create("updateAllLambdaFunctions", {
             group = AwsWrapperPlugin.GROUP
             description = "update All Lambda Functions"
-            dependsOn: extension.function.collect { function -> "updateLambdaFunction${function.name}" }
+            dependsOn = extension.function.collect { function -> "updateLambdaFunction${function.name}" }
         })
     }
 }

@@ -5,6 +5,7 @@ import jp.classmethod.aws.gradle.lambda.S3File;
 
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionContainer
+import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.model.Model
 import org.gradle.model.ModelMap
 import org.gradle.model.Mutate
@@ -47,11 +48,12 @@ class AwsWrapperRule extends RuleSource {
         
         extension.function.each { function -> 
             tasks.create("updateLambdaFunction${function.name}", AWSLambdaUpdateFunctionCodeTask.class, {
-                group = "Amazon Lambda Updater tasks"
+                group = AwsWrapperPlugin.GROUP
                 description = "update Lambda Function [${function.name}]"
+                dependsOn = [BeforeLambdaUpdateTask.NAME]
                 
                 if(source.file != null) {
-                    file = new File(source.file)
+                    zipFile = new File(source.file)
                 } else {
                     s3File = new S3File()
                     s3File.bucketName = source.bucketName
@@ -63,7 +65,7 @@ class AwsWrapperRule extends RuleSource {
         }
 
         tasks.create("updateAllLambdaFunctions", {
-            group = "Amazon Lambda Updater tasks"
+            group = AwsWrapperPlugin.GROUP
             description = "update All Lambda Functions"
             dependsOn: extension.function.collect { function -> "updateLambdaFunction${function.name}" }
         })

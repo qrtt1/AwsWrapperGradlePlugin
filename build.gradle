@@ -31,8 +31,13 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = 'org.qty.gradle.aws.lambda'
             artifactId = 'lambda.wrapper.plugin'
-            version = '0.0.1-SNAPSHOT'
+            version = "$VERSION-SNAPSHOT"
             from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "$buildDir/repo"
         }
     }
 }

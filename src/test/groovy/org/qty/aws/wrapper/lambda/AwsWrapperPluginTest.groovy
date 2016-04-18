@@ -27,6 +27,7 @@ class AwsWrapperPluginTest extends Specification {
     def setup() {
         PluginInstaller.install();
         buildFile = testProjectDir.newFile('build.gradle')
+        String mavenLocation = PluginInstaller.developMaven;
         buildFile << """
             buildscript {
                 repositories {
@@ -38,10 +39,12 @@ class AwsWrapperPluginTest extends Specification {
                 }
             
                 repositories {
-                    mavenLocal()
+                    maven {
+                        url "$mavenLocation"
+                    }
                 }
                 dependencies {
-                    classpath "org.qty.gradle.aws.lambda:lambda.wrapper.plugin:0.0.1-SNAPSHOT"
+                    classpath "org.qty.gradle.aws.lambda:lambda.wrapper.plugin:0.0.2-SNAPSHOT"
                 }
             }
             apply plugin: "org.qty.aws.wrapper.lambda"

@@ -18,22 +18,29 @@ public class PluginInstaller {
     private static Log logger = LogFactory.getLog(PluginInstaller.class);
 
     private static AtomicBoolean installed = new AtomicBoolean(false);
+    public static String developMaven = "";
 
     public synchronized static void install() {
         if (installed.get()) {
             return;
         }
-        
+
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
             File dir = new File(PluginInstaller.class.getResource("/").toURI());
             File buildScript = findBuildScript(dir, 0);
 
             BuildResult result = GradleRunner.create().withProjectDir(buildScript.getParentFile())
-                    .withArguments("publishToMavenLocal").build();
-            if (result.task(":publishToMavenLocal").getOutcome() != SUCCESS) {
-                throw new RuntimeException("failed to install plugin to localMaven()");
+                    .withArguments("publishMavenJavaPublicationToMavenRepository").build();
+            if (result.task(":publishMavenJavaPublicationToMavenRepository").getOutcome() != SUCCESS) {
+                throw new RuntimeException("failed to install plugin to custom-maven");
             }
+
+            File maven = new File(buildScript.getParent(), "build/repo");
+            if (!maven.exists()) {
+                throw new RuntimeException("failed to locate custom-maven: " + maven.getAbsolutePath());
+            }
+            developMaven = maven.getAbsolutePath();
             installed.set(true);
         } catch (Exception e) {
             throw new RuntimeException("Cannot install plugin !!!", e);

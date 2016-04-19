@@ -1,0 +1,26 @@
+apply plugin: 'com.novoda.bintray-release'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.3.4'
+    }
+}
+apply plugin: "maven-publish"
+apply from: 'common.gradle'
+
+group = MAVEN_GROUP
+version = VERSION
+
+publish {
+    groupId = MAVEN_GROUP
+    artifactId = MAVEN_ARTIFACT
+    publishVersion = VERSION
+    desc = DESCRIPTION
+    website = WEBSITE
+    bintrayUser = GRADLE_REPO_OAUTH_UPLOAD_USER
+    bintrayKey = GRADLE_REPO_OAUTH_UPLOAD_KEY
+    userOrg = USER_ORG
+}

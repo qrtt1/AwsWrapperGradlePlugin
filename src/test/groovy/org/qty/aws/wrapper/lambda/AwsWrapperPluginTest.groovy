@@ -15,8 +15,6 @@ import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 
-import com.google.gson.Gson;
-
 import spock.lang.Specification
 
 class AwsWrapperPluginTest extends Specification {
@@ -44,7 +42,7 @@ class AwsWrapperPluginTest extends Specification {
                     }
                 }
                 dependencies {
-                    classpath "org.qty.gradle.aws.lambda:lambda.wrapper.plugin:0.0.2-SNAPSHOT"
+                    classpath "org.qty.gradle.aws.lambda:lambda.wrapper.plugin:0.0.3-SNAPSHOT"
                 }
             }
             apply plugin: "org.qty.aws.wrapper.lambda"
@@ -121,22 +119,6 @@ class AwsWrapperPluginTest extends Specification {
                 lambdaConfig {
                     source {
                         key = 'def.zip'
-                    }
-                }
-            """
-        when:
-            invokeGradle()
-            
-        then:
-            thrown UnexpectedBuildFailure
-    }
-    
-    def testWrongSourceSettingsFileNotFound() {
-        given:
-            buildFile << """
-                lambdaConfig {
-                    source {
-                        file = 'no_such_file.zip'
                     }
                 }
             """

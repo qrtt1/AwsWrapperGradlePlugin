@@ -31,8 +31,8 @@ class AwsWrapperRule extends RuleSource {
                     "lambdaConfig.source{} should be one of the (file, bucketName with key)")
             
             File path = new File(source.file).getAbsoluteFile()
-            Preconditions.checkState(path.exists(),
-                "lambdaConfig.source{} file not found: " + path)
+//            Preconditions.checkState(path.exists(),
+//                "lambdaConfig.source{} file not found: " + path)
             
         } else {
             Preconditions.checkState(source.bucketName != null,
